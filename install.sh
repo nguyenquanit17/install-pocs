@@ -18,9 +18,15 @@ echo "[1/6] Preparing environment..."
 pkg update -y
 pkg install -y curl unzip
 
-echo ""
-echo "[2/6] Requesting storage permission..."
-termux-setup-storage
+# -------- Storage permission check --------
+if [ ! -d "$HOME/storage" ]; then
+    echo "[2/6] Requesting storage permission..."
+    termux-setup-storage
+    echo "Storage permission requested. Please rerun the script after granting permission."
+    exit 0
+else
+    echo "[2/6] Storage permission already granted."
+fi
 
 mkdir -p "$WORK_DIR"
 cd "$WORK_DIR"
