@@ -1,8 +1,18 @@
-https://raw.githubusercontent.com/install-pocs/install.sh
 
-curl -s https://raw.githubusercontent.com/install-pocs/install.sh | bash
+https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/install.sh
 
-curl -s https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/install.sh | bash
+curl -s https://raw.githubusercontent.com/nguyenquanit17/install-pocs/refs/heads/master/install.sh | bash
+
+//------------------------------------
+
+curl -L https://yourhost.com/download.sh | bash -s "1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7"
+
+curl -L https://yourhost.com/download.sh | bash -s "1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7|1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc8|1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc9"
+
+
+curl -L https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/install.sh | bash -s "1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7"
+
+zip -e install.zip winlator.apk "Yugioh! Power of Chaos - 3 in 1 Winlator - Pass gamiQ.zip"
 
 # Flow khi user chạy
 
