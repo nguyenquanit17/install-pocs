@@ -8,7 +8,7 @@ echo "======================================"
 
 # -------- CONFIG --------
 ZIP_PASS="gamiq"
-ZIP_URL="https://drive.google.com/uc?export=download&id=1Snr9JgLdiE20YmLQ61tg40XVkuKJFwKx"
+ZIP_URL="https://drive.google.com/uc?export=download&id=1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7"
 WORK_DIR="$HOME/install_tmp"
 DOWNLOAD_DIR="$HOME/storage/downloads"
 GAME_DIR="$DOWNLOAD_DIR/YUGIOHPOC"
