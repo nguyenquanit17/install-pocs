@@ -2,7 +2,7 @@
 set -e
 
 echo "======================================"
-echo "  YUGIOH POC INSTALLER v4.1 (Termux)"
+echo "  YUGIOH POC INSTALLER v4.2 (Termux)"
 echo "======================================"
 
 # -------- CONFIG --------
