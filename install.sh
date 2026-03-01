@@ -2,7 +2,7 @@
 set -e
 
 echo "======================================"
-echo "  YUGIOH POC INSTALLER v4 (Termux)"
+echo "  YUGIOH POC INSTALLER v4.1 (Termux)"
 echo "======================================"
 
 # -------- CONFIG --------
@@ -19,7 +19,6 @@ pkg update -y
 pkg install -y python unzip
 
 echo "📦 Cài gdown..."
-pip install --upgrade pip
 pip install --no-cache-dir gdown
 
 # -------- Step 2: Storage permission --------
