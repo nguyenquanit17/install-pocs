@@ -1,6 +1,8 @@
 https://raw.githubusercontent.com/install-pocs/install.sh
 
-curl -s https://raw.githubusercontent.com/yourrepo/install.sh | bash
+curl -s https://raw.githubusercontent.com/install-pocs/install.sh | bash
+
+curl -s https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/install.sh | bash
 
 # Flow khi user chạy
 
