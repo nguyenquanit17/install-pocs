@@ -2,68 +2,62 @@
 set -e
 
 echo "======================================"
-echo "  YUGIOH POC INSTALLER v2 (Termux)"
+echo "  YUGIOH POC INSTALLER v4 (Termux)"
 echo "======================================"
 
 # -------- CONFIG --------
 ZIP_PASS="gamiq"
-FILEID="1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7"
-FILENAME="install.zip"
+ZIP_LINK="https://drive.google.com/uc?id=1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7"
 WORK_DIR="$HOME/install_tmp"
-DOWNLOAD_DIR="$HOME/storage/downloads"
-GAME_DIR="$DOWNLOAD_DIR/YUGIOHPOC"
+TARGET_DIR="$HOME/storage/downloads/GamiQ"
+GAME_DIR="$TARGET_DIR/YUGIOHPOC"
 # ------------------------
 
-# -------- Step 1: Prepare environment --------
-echo "[1/7] Installing required packages..."
+# -------- Step 1: Install dependencies --------
+echo "🔧 Cài Python + unzip..."
 pkg update -y
-pkg install -y curl unzip
+pkg install -y python unzip
 
-# -------- Step 2: Storage check --------
+echo "📦 Cài gdown..."
+pip install --upgrade pip
+pip install --no-cache-dir gdown
+
+# -------- Step 2: Storage permission --------
 if [ ! -d "$HOME/storage" ]; then
-    echo "[2/7] Storage permission not found. Requesting..."
+    echo "📂 Storage permission chưa cấp. Yêu cầu cấp..."
     termux-setup-storage
-    echo "Please grant storage permission, then rerun the script."
+    echo "⚠️ Vui lòng rerun script sau khi cấp quyền storage."
     exit 0
 else
-    echo "[2/7] Storage permission already granted."
+    echo "📂 Storage permission đã được cấp."
 fi
 
+# -------- Step 3: Prepare directories --------
 mkdir -p "$WORK_DIR"
+mkdir -p "$TARGET_DIR"
+mkdir -p "$GAME_DIR"
 cd "$WORK_DIR"
 
-# -------- Step 3: Download install.zip from Google Drive --------
-echo "[3/7] Downloading install.zip from Google Drive..."
+echo "📁 Thư mục download: $TARGET_DIR"
 
-curl -c /tmp/cookies.txt "https://drive.google.com/uc?export=download&id=${FILEID}" -o /tmp/intermediate.html
+# -------- Step 4: Download install.zip --------
+echo "🔽 Tải install.zip từ Google Drive..."
+gdown "$ZIP_LINK" -O "$TARGET_DIR/install.zip"
 
-CONFIRM=$(grep -o 'confirm=[^&]*' /tmp/intermediate.html | head -n1 | cut -d= -f2 || echo "")
+# -------- Step 5: Extract install.zip --------
+echo "📂 Giải nén install.zip..."
+unzip -o -P "$ZIP_PASS" "$TARGET_DIR/install.zip" -d "$TARGET_DIR/install"
 
-if [ -n "$CONFIRM" ]; then
-    curl -L -b /tmp/cookies.txt "https://drive.google.com/uc?export=download&confirm=${CONFIRM}&id=${FILEID}" -o "$FILENAME"
-else
-    curl -L -b /tmp/cookies.txt "https://drive.google.com/uc?export=download&id=${FILEID}" -o "$FILENAME"
-fi
+# -------- Step 6: Extract dmg.zip --------
+echo "📂 Giải nén dmg.zip → $GAME_DIR"
+unzip -o -P "$ZIP_PASS" "$TARGET_DIR/install/dmg.zip" -d "$GAME_DIR"
 
-rm -f /tmp/cookies.txt /tmp/intermediate.html
+# -------- Step 7: Open APK installer --------
+echo "📦 Mở APK installer..."
+termux-open "$TARGET_DIR/install/winlator.apk"
 
-# -------- Step 4: Extract install.zip --------
-echo "[4/7] Extracting install.zip..."
-rm -rf install
-unzip -P "$ZIP_PASS" "$FILENAME" > /dev/null
-
-# -------- Step 5: Extract dmg.zip --------
-echo "[5/7] Extracting dmg.zip → $GAME_DIR"
-mkdir -p "$GAME_DIR"
-unzip -o -P "$ZIP_PASS" dmg.zip -d "$GAME_DIR" > /dev/null
-
-# -------- Step 6: Open APK installer --------
-echo "[6/7] Opening APK installer..."
-mv winlator.apk "$DOWNLOAD_DIR/"
-termux-open "$DOWNLOAD_DIR/winlator.apk"
-
-# -------- Step 7: Done --------
-echo "[7/7] Installation process complete!"
-echo "Please press INSTALL when Android installer opens."
-echo "Game data installed at: $GAME_DIR"
+# -------- Step 8: Done --------
+echo "🎉 Hoàn tất!"
+echo "Game data nằm tại: $GAME_DIR"
+echo "Vui lòng bấm INSTALL khi APK mở ra."
 echo "======================================"
