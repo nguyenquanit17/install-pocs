@@ -10,7 +10,13 @@ curl -L https://yourhost.com/download.sh | bash -s "1fcFXZllDk4gS-NmuTpIi4OXcT_N
 curl -L https://yourhost.com/download.sh | bash -s "1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7|1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc8|1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc9"
 
 
-curl -L https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/install.sh | bash -s "1fcFXZllDk4gS-NmuTpIi4OXcT_NONjc7"
+curl -L https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/install.sh | bash -s "1ZflJ3sPZFFFWiEdjyxSlqcg5V3qSckx_"
+
+
+curl -L https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/download.sh | bash -s "1heRROGNieaemcvz42VnDME7rkDnXMY8r"
+
+
+https://drive.google.com/file/d/`<ID>`/view?usp=drive_link
 
 zip -e install.zip winlator.apk "Yugioh! Power of Chaos - 3 in 1 Winlator - Pass gamiQ.zip"
 
@@ -29,3 +35,15 @@ Script tự làm:
 Rất dễ cho người  **không biết kỹ thuật** .
 
 ---
+
+//------------------------------------
+# Windows 10+ (tải + giải nén pass gamiQ, mỗi game 1 thư mục)
+
+Double-click `windows/download-windows.bat`, hoặc dán vào PowerShell:
+
+    irm https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/windows/download-windows.ps1 | iex
+
+Tuỳ chọn: `-Dest D:\GamiQ` (mặc định hỏi, Enter = C:\GamiQ; đường dẫn phải không dấu), `-Games 3,5` / `all`,
+`-Force` (tải lại game đã có), `-NoPause`. Danh sách game + Drive ID ở `$GameList` đầu script.
+Zip 05/06 mã hoá AES ⇒ cần 7-Zip; máy chưa cài thì script tự tải 7za.exe portable vào `<Dest>\_tools\7zip`.
+Tải đứt giữa chừng: chạy lại, curl tải tiếp từ `<Dest>\_downloads`.
