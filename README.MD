@@ -45,5 +45,6 @@ Double-click `windows/download-windows.bat`, hoặc dán vào PowerShell:
 
 Tuỳ chọn: `-Dest D:\GamiQ` (mặc định hỏi, Enter = C:\GamiQ; đường dẫn phải không dấu), `-Games 3,5` / `all`,
 `-Force` (tải lại game đã có), `-NoPause`. Danh sách game + Drive ID ở `$GameList` đầu script.
-Zip 05/06 mã hoá AES ⇒ cần 7-Zip; máy chưa cài thì script tự tải 7za.exe portable vào `<Dest>\_tools\7zip`.
+Zip 05/06 mã hoá AES ⇒ cần 7-Zip; máy chưa cài thì script lấy `windows/7zip/7za.exe` (7-Zip 25.01 x86, LGPL — `License.txt`; kiểm SHA256)
+vào `<Dest>\_tools\7zip`; lỗi thì dự phòng 7-zip.org → GitHub ip7z 24.09. Đổi 7za.exe ⇒ sửa `$repoSha` trong script.
 Tải đứt giữa chừng: chạy lại, curl tải tiếp từ `<Dest>\_downloads`.

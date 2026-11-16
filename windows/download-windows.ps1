@@ -108,8 +108,27 @@ function Get-7z($toolDir) {
     $exe = Find-7z $toolDir
     if ($exe) { Say "7-Zip: $exe"; return $exe }
 
-    Say 'May chua co 7-Zip -> tai ban portable (7za.exe, ~1.5 MB) tu 7-zip.org...' 'Cyan'
     New-Item -ItemType Directory -Force -Path $toolDir | Out-Null
+    $exe = Join-Path $toolDir '7za.exe'
+
+    # 1) ban 7za.exe 25.01 x86 (chay ca Win 32/64-bit) de san trong repo install-pocs:
+    #    cung cho voi script -> tai duoc script la tai duoc 7za. Kiem SHA256 cho chac.
+    $repoSha = '26817725650583D99CA3E617A618DD75C0F71BD316B5761780B7361F5F824CAD'
+    $local = if ($PSScriptRoot) { Join-Path $PSScriptRoot '7zip\7za.exe' } else { '' }
+    try {
+        if ($local -and (Test-Path $local)) {
+            Copy-Item $local $exe -Force
+        } else {
+            Say 'May chua co 7-Zip -> tai 7za.exe (~0.8 MB)...' 'Cyan'
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/windows/7zip/7za.exe' -OutFile $exe -UseBasicParsing
+        }
+        if ((Get-FileHash $exe -Algorithm SHA256).Hash -eq $repoSha) { Say "7-Zip: $exe"; return $exe }
+        Say '  7za.exe tai ve bi sai noi dung -> thu nguon khac.' 'Yellow'
+    } catch { Say "  Khong lay duoc 7za.exe tu GitHub: $($_.Exception.Message)" 'Yellow' }
+    Remove-Item $exe -Force -ErrorAction SilentlyContinue
+
+    # 2) du phong: tai goi extra chinh thuc cua 7-Zip roi lay 7za.exe ra
+    Say 'Thu tai 7-Zip tu 7-zip.org / GitHub 7-Zip...' 'Cyan'
     $sources = @(
         @{ R = 'https://www.7-zip.org/a/7zr.exe'; X = 'https://www.7-zip.org/a/7z2501-extra.7z' },
         @{ R = 'https://github.com/ip7z/7zip/releases/download/24.09/7zr.exe'; X = 'https://github.com/ip7z/7zip/releases/download/24.09/7z2409-extra.7z' }
@@ -126,7 +145,6 @@ function Get-7z($toolDir) {
         } catch { Say "  Nguon $($s.R) loi: $($_.Exception.Message)" 'Yellow' }
     }
     Remove-Item $extra -Force -ErrorAction SilentlyContinue
-    $exe = Join-Path $toolDir '7za.exe'
     if (-not (Test-Path $exe)) { throw 'Khong tai duoc 7-Zip. Cai 7-Zip (https://www.7-zip.org) roi chay lai.' }
     return $exe
 }
