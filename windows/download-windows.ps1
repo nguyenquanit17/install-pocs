@@ -5,6 +5,7 @@
 #   2) Hoac mo PowerShell, dan 1 dong:
 #        irm https://raw.githubusercontent.com/nguyenquanit17/install-pocs/master/windows/download-windows.ps1 | iex
 #   3) Tuy chon:  .\download-windows.ps1 -Dest D:\GamiQ -Games 3,5   (-Games all = tai het, -Force = giai nen lai)
+#                 -ToolsOnly = chi tai tool vao <Dest>\_tools, -NoTools = bo qua tool
 #
 # Moi ban game -> 1 thu muc rieng trong <Dest>. Zip co mat khau gamiQ (05/06 ma hoa AES
 # nen phai dung 7-Zip: may co san thi dung, khong co thi tu tai ban portable 7za.exe).
@@ -14,6 +15,8 @@ param(
     [string]$Dest = "",
     [string]$Games = "",
     [switch]$Force,
+    [switch]$ToolsOnly,
+    [switch]$NoTools,
     [switch]$NoPause
 )
 
@@ -30,6 +33,13 @@ $GameList = @(
     @{ No = 5; Name = '05 - Battle City Finals (Mortis)';  Id = '1ZM7A-3Jd_b8KMcbnt2odHJUQfautKkkP'; MB = 1512; Note = '' },
     @{ No = 6; Name = '06 - Atem the Destiny (Mortis)';    Id = '1x48mGxsxYh4Nf7skJVhDKyxuxv8Y5D-F'; MB = 478;  Note = '' },
     @{ No = 7; Name = '07 - Bakura the Dark Spirit';       Id = '1heRROGNieaemcvz42VnDME7rkDnXMY8r'; MB = 341;  Note = '' }
+)
+
+# Tool nho (moi zip = 1 file .exe, pass gamiQ) -> giai nen vao <Dest>\_tools
+$ToolList = @(
+    @{ Exe = 'reset_save_win1011x64.exe';            Id = '1zpRmtghIOxMyyNlOKxMQpjTKHS_Pv_ud'; Note = 'xoa save (reset game)' },
+    @{ Exe = 'fullcard_3in1_win1011x64.exe';         Id = '1nF-P_DPQS2hyBkqDQA2RAQ8dWF8k-K2a'; Note = 'mo full la ban 3 in 1' },
+    @{ Exe = 'fullcard_multiversion_win1011x64.exe'; Id = '11pc9hJhuVLgEfQH8ZRmNnFktE5AbGayV'; Note = 'mo full la cac ban con lai' }
 )
 
 function Say($msg, $color = 'Gray') { Write-Host $msg -ForegroundColor $color }
@@ -170,6 +180,33 @@ function Expand-Game($sevenZip, $zip, $target, $workDir) {
     Get-ChildItem -LiteralPath $target -Recurse -File | Unblock-File -ErrorAction SilentlyContinue
 }
 
+# ---------- tool vao _tools ----------
+function Install-Tools($sevenZip, $toolsRoot, $workDir) {
+    $out = @()
+    foreach ($t in $ToolList) {
+        $exe = Join-Path $toolsRoot $t.Exe
+        if ((Test-Path -LiteralPath $exe) -and -not $Force) { $out += "SKIP  _tools\$($t.Exe)"; continue }
+        try {
+            $zip = Join-Path $workDir ('tool_' + $t.Id + '.zip')
+            Say "  Tai $($t.Exe)..."
+            Download-File (Get-Url $t.Id) $zip $t.Exe
+            $ok = $false
+            foreach ($pw in $ZipPass) {
+                & $sevenZip x $zip "-p$pw" "-o$toolsRoot" -aoa -y -bso0 -bsp0
+                if ($LASTEXITCODE -eq 0) { $ok = $true; break }
+            }
+            Remove-Item $zip -Force -ErrorAction SilentlyContinue
+            if (-not $ok -or -not (Test-Path -LiteralPath $exe)) { throw "giai nen loi" }
+            Unblock-File -LiteralPath $exe -ErrorAction SilentlyContinue
+            $out += "OK    _tools\$($t.Exe)"
+        } catch {
+            Say "  LOI $($t.Exe): $($_.Exception.Message)" 'Red'
+            $out += "FAIL  _tools\$($t.Exe)  ($($_.Exception.Message))"
+        }
+    }
+    return $out
+}
+
 # ================== MAIN ==================
 Say '======================================' 'Cyan'
 Say '  GAMIQ - YU-GI-OH! POC (Windows 10+)' 'Cyan'
@@ -184,8 +221,19 @@ if (-not (Test-Ascii $Dest)) {
 }
 New-Item -ItemType Directory -Force -Path $Dest | Out-Null
 $dlDir = Join-Path $Dest '_downloads'
-$toolDir = Join-Path $Dest '_tools\7zip'
+$toolsRoot = Join-Path $Dest '_tools'
+$toolDir = Join-Path $toolsRoot '7zip'
 New-Item -ItemType Directory -Force -Path $dlDir | Out-Null
+
+$results = @()
+if (-not $NoTools) {
+    Say ''
+    Say "Tool -> $toolsRoot" 'Cyan'
+    $sevenZip = Get-7z $toolDir
+    $results += Install-Tools $sevenZip $toolsRoot $dlDir
+    $results | ForEach-Object { $c = if ($_ -like 'FAIL*') { 'Red' } elseif ($_ -like 'OK*') { 'Green' } else { 'Gray' }; Say "  $_" $c }
+}
+if ($ToolsOnly) { $selected = @() } else {
 
 # chon game
 Say ''
@@ -206,11 +254,11 @@ if (-not $Games -or $Games -eq 'all') {
     $selected = @($GameList | Where-Object { $nums -contains $_.No })
 }
 if ($selected.Count -eq 0) { Say 'Khong chon game nao.' 'Yellow'; Pause-Exit 1 }
+}
 
-$sevenZip = Get-7z $toolDir
+if (-not $sevenZip -and $selected.Count -gt 0) { $sevenZip = Get-7z $toolDir }
 $drive = (Get-Item $Dest).PSDrive
 
-$results = @()
 $i = 0
 foreach ($g in $selected) {
     $i++

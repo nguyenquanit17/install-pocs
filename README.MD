@@ -48,3 +48,5 @@ Tuỳ chọn: `-Dest D:\GamiQ` (mặc định hỏi, Enter = C:\GamiQ; đường
 Zip 05/06 mã hoá AES ⇒ cần 7-Zip; máy chưa cài thì script lấy `windows/7zip/7za.exe` (7-Zip 25.01 x86, LGPL — `License.txt`; kiểm SHA256)
 vào `<Dest>\_tools\7zip`; lỗi thì dự phòng 7-zip.org → GitHub ip7z 24.09. Đổi 7za.exe ⇒ sửa `$repoSha` trong script.
 Tải đứt giữa chừng: chạy lại, curl tải tiếp từ `<Dest>\_downloads`.
+Tool vào `<Dest>\_tools` (chạy trước game, có rồi thì bỏ qua): `reset_save_win1011x64.exe`, `fullcard_3in1_win1011x64.exe`,
+`fullcard_multiversion_win1011x64.exe` (zip ZipCrypto pass gamiQ, Drive ID ở `$ToolList`). `-ToolsOnly` = chỉ tải tool, `-NoTools` = bỏ qua.
